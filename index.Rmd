@@ -1,0 +1,46 @@
+---
+title: "renv: An Introduction"
+author: "Gareth Maddock"
+date: "03 August 2021"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      ratio: 16:9
+      highlightStyle: solarized-light
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: center, middle
+
+# xaringan
+
+### /ʃaː.'riŋ.ɡan/
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+xaringanthemer::style_duo(
+  primary_color = "#272626",
+  secondary_color = "#d0debb",
+  header_font_google = xaringanthemer::google_font("Rubik", "700"),
+  text_font_google   = xaringanthemer::google_font("Roboto", "200"),
+  code_font_google   = xaringanthemer::google_font("Fira Mono"),
+  text_slide_number_color = "transparent"
+)
+```
+
+---
+class: inverse, center, middle
+
+# Get Started
+
+---
+
+# Hello World
+
+Install the **xaringan** package from [Github](https://github.com/yihui/xaringan):
+
+```{r eval=FALSE, tidy=FALSE}
+remotes::install_github("yihui/xaringan")
+```
