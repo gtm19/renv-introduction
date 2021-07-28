@@ -143,5 +143,5 @@ drwxr-xr-x@  48 garethmaddock  staff   1.5K 28 Jul 10:46 ..
 -rw-r--r--    1 garethmaddock  staff   256B 28 Jul 10:54 package.json
 ```
 
-`node_modules/` has quite a lot of stuff in it - it's where `eslint` and _it's_
+`node_modules/` has quite a lot of stuff in it - it's where `eslint` and _its_
 dependencies now live!
