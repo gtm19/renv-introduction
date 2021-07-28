@@ -12,11 +12,10 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
-class: center, middle
 
-# xaringan
+class: inverse, middle
 
-### /ʃaː.'riŋ.ɡan/
+# A food-based <br>motivational example
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
@@ -31,16 +30,118 @@ xaringanthemer::style_duo(
 ```
 
 ---
-class: inverse, center, middle
 
-# Get Started
+background-image: url('https://images.unsplash.com/photo-1605522561233-768ad7a8fabf?fit=crop&w=1952&q=80')
+background-position: center
+background-size: cover
 
 ---
 
-# Hello World
+background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1605522561233-768ad7a8fabf?fit=crop&w=1952&q=80')
+background-position: center
+background-size: cover
 
-Install the **xaringan** package from [Github](https://github.com/yihui/xaringan):
+# Cooking a Curry
 
-```{r eval=FALSE, tidy=FALSE}
-remotes::install_github("yihui/xaringan")
+* Imagine you want to cook a curry
+
+* You Google a nice recipe, follow the instructions, make a nice curry
+
+--
+
+* 6 months later, you Google 'curry recipe' and, because of Adwords etc, you 
+can't find the same recipe
+
+* You pick one which looks OK, but you make it and it's not the same
+
+--
+
+* Your life thereafter begins to unravel
+
+* You _should_ have made a note of the original recipe so you could be sure to
+be able to recreate it in future
+
+---
+class: inverse, middle
+
+# A code-based <br>motivational example
+
+---
+
+# Node Package Manager (`npm`)
+
+[`npm`](https://www.npmjs.com/) is used to install JavaScript dependencies for web projects
+
+Like with the curry, if you want to deploy your app on a server, you want the 
+server to grab the _specific versions_ of the dependencies you developed the app
+with, since breaking changes to subsequent versions might cause your app to crash
+
+#### Getting started
+
+```sh
+npm init
+cat package.json
 ```
+
+```json
+{
+  "name": "npm-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+```
+---
+
+# Installing with `npm`
+
+Let's install a random library:
+
+```sh
+npm install eslint
+cat package.json
+```
+--
+We have some additional entries in our `package.json`:
+
+```json
+{
+  "name": "npm-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+* "dependencies": {
+*   "eslint": "^7.31.0"
+* }
+}
+```
+---
+
+# Installing with `npm`
+
+We also have some extra stuff in our project:
+
+```sh
+ls -lah
+```
+```txt
+total 160
+drwxr-xr-x    5 garethmaddock  staff   160B 28 Jul 10:54 .
+drwxr-xr-x@  48 garethmaddock  staff   1.5K 28 Jul 10:46 ..
+*drwxr-xr-x  103 garethmaddock  staff   3.2K 28 Jul 10:54 node_modules
+*-rw-r--r--    1 garethmaddock  staff    75K 28 Jul 10:54 package-lock.json
+-rw-r--r--    1 garethmaddock  staff   256B 28 Jul 10:54 package.json
+```
+
+`node_modules/` has quite a lot of stuff in it - it's where `eslint` and _it's_
+dependencies now live!
