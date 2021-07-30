@@ -253,3 +253,17 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   background-color: var(--secondary);
 }
 
+
+
+/* Extra CSS */
+.small code {
+  font-size: small;
+}
+.smaller code {
+  font-size: smaller;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

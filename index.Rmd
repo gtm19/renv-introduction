@@ -5,12 +5,21 @@ date: "03 August 2021"
 output:
   xaringan::moon_reader:
     lib_dir: libs
+    seal: false
     css: xaringan-themer.css
     nature:
       ratio: 16:9
       highlightStyle: solarized-light
       highlightLines: true
       countIncrementalSlides: false
+---
+
+class: title-slide, middle
+
+# renv: An Introduction
+## Gareth Maddock
+### 03 August 2021
+
 ---
 
 class: inverse, middle
@@ -27,6 +36,20 @@ xaringanthemer::style_duo(
   code_font_google   = xaringanthemer::google_font("Fira Mono"),
   text_slide_number_color = "transparent"
 )
+
+xaringanthemer::style_extra_css(
+  css = list(
+    ".small code" = list("font-size" = "small"),
+    ".smaller code" = list("font-size" = "smaller"),
+    ".center" = list(
+        display = "block",
+        "margin-left" = "auto",
+        "margin-right" = "auto"
+    )
+  )
+)
+
+
 ```
 
 ---
@@ -43,14 +66,16 @@ background-size: cover
 
 # Cooking a Curry
 
-* Imagine you want to cook a curry
+* Imagine you have never made a curry before in your life, but you've gone very
+long on your abilities in this department, and told your friends you learned 
+from masters when you were on your gap year in India
 
 * You Google a nice recipe, follow the instructions, make a nice curry
 
 --
 
-* 6 months later, you Google 'curry recipe' and, because of Adwords etc, you 
-can't find the same recipe
+* 6 months later, you want to make the curry again, so you Google 'curry recipe'
+and, because of "THE ALGO", you can't find the same recipe
 
 * You pick one which looks OK, but you make it and it's not the same
 
@@ -59,7 +84,8 @@ can't find the same recipe
 * Your life thereafter begins to unravel
 
 * You _should_ have made a note of the original recipe so you could be sure to
-be able to recreate it in future
+be able to recreate it in future (and also probably not have embellished your
+abilities quite so much)
 
 ---
 class: inverse, middle
@@ -76,12 +102,42 @@ Like with the curry, if you want to deploy your app on a server, you want the
 server to grab the _specific versions_ of the dependencies you developed the app
 with, since breaking changes to subsequent versions might cause your app to crash
 
+It would also be helpful if your dependencies are automatically documented as 
+part of the process of installing them
+
 #### Getting started
 
+If you want to run any of the `npm` commands, you will need to install
+[`Node.js`](https://nodejs.org/en/download/package-manager/)
+
+To do this using Homebrew on macOS, first install [Homebrew](https://brew.sh/)
+if you haven't already, and then run:
+
 ```sh
+brew install node
+```
+
+Once node is installed, create a new directory somewhere, and run the following
+to initialise a project with `npm`:
+
+```sh
+mkdir npm-testing
+cd npm-testing
 npm init
+```
+---
+
+# Initialising `npm`
+
+What artefacts does initialising `npm` create in our folder?
+
+Initially, just a `package.json` file:
+
+```sh
 cat package.json
 ```
+
+Which looks like this:
 
 ```json
 {
@@ -96,18 +152,50 @@ cat package.json
   "license": "ISC"
 }
 ```
+
+???
+
+* Not much which is immediately useful, beyond some metadata about the project
+itself...but what happens when we install a package?
+
 ---
 
 # Installing with `npm`
 
-Let's install a random library:
+Let's install the [`eslint` library](https://eslint.org/), a JavaScript linter 
+which basically shouts at you when you miss a semicolon:
 
 ```sh
 npm install eslint
 cat package.json
 ```
+
+Now what do we have?
+
+
 --
-We have some additional entries in our `package.json`:
+
+```sh
+ls -lah
+```
+
+```txt
+total 160
+drwxr-xr-x    5 garethmaddock  staff   160B 28 Jul 10:54 .
+drwxr-xr-x@  48 garethmaddock  staff   1.5K 28 Jul 10:46 ..
+*drwxr-xr-x  103 garethmaddock  staff   3.2K 28 Jul 10:54 node_modules
+*-rw-r--r--    1 garethmaddock  staff    75K 28 Jul 10:54 package-lock.json
+-rw-r--r--    1 garethmaddock  staff   256B 28 Jul 10:54 package.json
+```
+
+A wild `node_modules/` directory and a `package-lock.json` file have appeared! 
+(and our `package.json` file has been updated).
+
+---
+
+# `package.json`
+
+`eslint` is now listed as a dependency in `package.json`:
 
 ```json
 {
@@ -125,23 +213,332 @@ We have some additional entries in our `package.json`:
 * }
 }
 ```
+
+--
+
+The `^` means _at least_ `v7.31.0` but no higher than `v8.0.0` (since that could
+contain breaking changes)
+
 ---
 
-# Installing with `npm`
+# `package-lock.json`
 
-We also have some extra stuff in our project:
+The `package-lock.json` file holds all the minute detail about our dependencies:
+
+```sh
+sed -n 1,20p package-lock.json
+```
+.smaller[
+  ```json
+{
+  "name": "npm-testing",
+  "version": "1.0.0",
+  "lockfileVersion": 2,
+  "requires": true,
+  "packages": {
+    "": {
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "eslint": "^7.31.0"
+      }
+    },
+*    "node_modules/@babel/code-frame": {
+*      "version": "7.12.11",
+*      "resolved": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.11.tgz",
+*      "integrity": "sha512-Zt1yodBx1UcyiePMSkWnU4hPqhwq7hGi2nFL1LeA3EUl+q2LQx16MISgJ0+z7dnmgvP9QtIleuETGOiOH1RcIw==",
+*      "dependencies": {
+*        "@babel/highlight": "^7.10.4"
+*      }
+  ```
+]
+
+---
+
+# `node_modules/`
+
+This directory is where the packages themselves are installed - at the _project_
+level, rather than at _system_ level
+
+This directory is usually added to `.gitignore` (since it can be quite large),
+and when another developer (or host server) needs to install the packages, 
+the command:
+
+```sh
+npm install
+```
+
+Will use the `package-lock.json` file to determine which dependencies are
+required, and it rebuilds `node_modules/`
+
+You can see this in action by running:
+
+```sh
+rm -rf node_modules && \ # to remove the node_modules directory
+npm install
+
+```
+```txt
+added 115 packages, and audited 116 packages in 911ms
+
+15 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+---
+
+class: inverse, middle
+background-image: linear-gradient(to bottom, #d0debbaa, #d0debbcc), url(https://media.giphy.com/media/3oz8xBE9Nn18hK0iac/giphy.gif)
+background-position: center
+background-size: cover
+
+# The actual R-based main event that we're all here for:
+# <code style="color: var(--primary);">renv</code>
+
+---
+
+# `renv`
+
+`renv` is a package created by [Kevin Ushey](https://github.com/kevinushey), the
+aim of which is:
+
+> ...to bring project-local R dependency management to your projects. The goal is for renv to be a robust, stable replacement for the [Packrat](https://rstudio.github.io/packrat/) package, with fewer surprises and better default behaviors.
+>
+> Underlying the philosophy of `renv` is that any of your existing workflows should just work as they did before – `renv` helps manage library paths (and other project-specific state) to help isolate your project’s R dependencies, and the existing tools you’ve used for managing R packages (e.g. `install.packages()`, `remove.packages()`) should work as they did before.
+
+This is required because, out of the box, R installs all packages in a system 
+library:
+
+```r
+.libPaths()
+# [1] "/Library/Frameworks/R.framework/Versions/4.0/Resources/library"
+```
+
+---
+
+# Getting started with `renv`
+
+If you use RStudio, the easiest way to get started with `renv` is to create a
+new Project / Package by clicking
+
+> `File > New Project > ...`
+
+And then selecting `Use renv with this project`:
+
+<img
+  src="img/init_renv.png"
+  alt="RStudio dialog box for initiating renv"
+  height="350px"
+  class="center"
+/>
+
+---
+
+# Getting started (as a hacker) with `renv`
+
+First of all, create yourself a new directory:
+
+```sh
+mkdir renv-testing
+cd renv-testing
+```
+
+Then fire up an R console and run the following:
+
+```r
+if (require(renv)) install.packages("renv")
+renv::init()
+```
+.smaller[
+```txt
+Initializing project ...
+Discovering package dependencies ... Done!
+Copying packages into the cache ... Done!
+The following package(s) will be updated in the lockfile:
+
+# CRAN ===============================
+- renv   [* -> 0.13.0]
+
+Lockfile written to '~/Documents/Sandbox/renv-testing/renv.lock'.
+renv activated -- please restart the R session.
+```
+]
+
+---
+
+# `renv::init()` artefacts
+
+What have we just created?
 
 ```sh
 ls -lah
 ```
+
 ```txt
-total 160
-drwxr-xr-x    5 garethmaddock  staff   160B 28 Jul 10:54 .
-drwxr-xr-x@  48 garethmaddock  staff   1.5K 28 Jul 10:46 ..
-*drwxr-xr-x  103 garethmaddock  staff   3.2K 28 Jul 10:54 node_modules
-*-rw-r--r--    1 garethmaddock  staff    75K 28 Jul 10:54 package-lock.json
--rw-r--r--    1 garethmaddock  staff   256B 28 Jul 10:54 package.json
+total 16
+drwxr-xr-x   5 garethmaddock  staff   160B 30 Jul 12:31 .
+drwxr-xr-x@ 49 garethmaddock  staff   1.5K 30 Jul 12:31 ..
+*-rw-r--r--   1 garethmaddock  staff    26B 30 Jul 12:31 .Rprofile
+*drwxr-xr-x   7 garethmaddock  staff   224B 30 Jul 12:31 renv
+*-rw-r--r--   1 garethmaddock  staff   354B 30 Jul 12:31 renv.lock
 ```
 
-`node_modules/` has quite a lot of stuff in it - it's where `eslint` and _its_
-dependencies now live!
+We now have a `renv/` directory, a `renv.lock` file, and a `.Rprofile` file.
+
+---
+
+# `renv/` directory
+
+This is the `renv` equivalent of `node_modules/`: it's where your project's R
+packages will be installed.
+
+Just like with `node_modules/`, this should be added to `.gitignore` due to its
+likely size.
+
+What's in the various files and subdirectories is beyond the scope of this
+presentation, but it's worth noting that packages will be installed in
+subdirectories depending on the version of R and the operating system:
+
+```sh
+ls -lah renv/library/R-4.0/x86_64-apple-darwin17.0
+```
+
+```txt
+
+total 0
+drwxr-xr-x   3 garethmaddock  staff    96B 30 Jul 12:31 .
+drwxr-xr-x   3 garethmaddock  staff    96B 30 Jul 12:31 ..
+*drwxr-xr-x  15 garethmaddock  admin   480B  8 Apr 10:37 renv
+```
+
+At the moment, `renv` is the only package we have installed locally. We'll 
+install another shortly.
+
+---
+
+# `renv.lock`
+
+This is the `renv` equivalent of `package-lock.json`
+
+```sh
+cat renv.lock
+```
+.smaller[
+```json
+{
+  "R": {
+    "Version": "4.0.5",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
+      }
+    ]
+  },
+  "Packages": {
+    "renv": {
+      "Package": "renv",
+      "Version": "0.13.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9f10d9db5b50400c348920c5c603385e"
+    }
+  }
+}
+```
+]
+
+---
+
+# `.Rprofile`
+
+An `.Rprofile` file is a startup file which is (by default) sourced into your R
+session when an R terminal is opened.
+
+You can read more about how this works on the [RStudio website](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf).
+
+The file which `renv` has created is very simple:
+
+```sh
+cat .Rprofile
+```
+
+```r
+# /.Rprofile
+source("renv/activate.R")
+```
+
+`renv/activate.R` is a very long script, which again is beyond the scope of this
+presentation, but in short it:
+
+* installs `renv` if it is not already installed locally
+* runs `renv::load()`, which instructs the project to use a project-level 
+library, checks to see if the library is up to date with `renv.lock`, and 
+invites you to restore your packages from this file if not
+
+The script is [on GitHub](https://github.com/rstudio/renv/blob/master/inst/resources/activate.R) if you want to see it in more detail
+
+---
+
+# Installing a package with `renv`
+
+To install a package, you _can_ use `install.packages()` or `remotes::install_github()`
+as usual, but `renv` has its own, single function for installing packages, which
+will in turn trawl CRAN, GitHub, GitLab (etc) for the requested package:
+
+```r
+renv::install("janitor")
+```
+
+This installs the package into the `renv/` directory. **However**, unlike with
+`npm`, the details of the package are _not_ automatically added to the
+`renv.lock` file.
+
+In order to do that, you need to run the `renv::snapshot()` function:
+
+```r
+renv::snapshot()
+# * The lockfile is already up to date.
+```
+
+But...that doesn't really look like it did anything either. What is going on?
+
+---
+
+# `renv::snapshot`
+
+`renv::snapshot()` has a `type` parameter, which can be one of the following:
+
+.pull-left[
+  ### "all"
+  Basically every package you've installed, whether for development or production
+  
+  ### "implicit" (default)
+  Only packages which are actually used in your code
+]
+
+.pull-right[
+  ### "explicit"
+  Only packages listed in your `DESCRIPTION` file (if making a package)
+
+  ### "custom"
+  ...something custom (more info [here](https://rstudio.github.io/renv/reference/snapshot.html#snapshot-type))
+]
+
+---
+
+# Typical workflow
+
+* Create project / package
+* Run `renv::init()`
+
+---
+
+# Session info
+.smaller[
+```{r session_info, echo=FALSE}
+sessionInfo()
+```
+]
