@@ -290,6 +290,12 @@ library:
 # [1] "/Library/Frameworks/R.framework/Versions/4.0/Resources/library"
 ```
 
+???
+
+System library means code which runs on my machine won't necessarily run on
+anyone else's, or on a clean server which will likely install the most recent
+version of a package.
+
 ---
 
 # Getting started with `renv`
@@ -360,6 +366,14 @@ drwxr-xr-x@ 49 garethmaddock  staff   1.5K 30 Jul 12:31 ..
 ```
 
 We now have a `renv/` directory, a `renv.lock` file, and a `.Rprofile` file.
+
+Also, our `.libPaths()` have changed:
+
+```r
+libPaths()
+# [1] "/Users/garethmaddock/Documents/Sandbox/renv-testing/renv/library/R-4.0/x86_64-apple-darwin17.0"
+# [2] "/private/var/folders/m7/6__gwwrs40gc8ytt3l8mqx880000gr/T/RtmppZDUrg/renv-system-library"
+```
 
 ---
 
@@ -466,9 +480,9 @@ will in turn trawl CRAN, GitHub, GitLab (etc) for the requested package:
 renv::install("janitor")
 ```
 
-This installs the package into the `renv/` directory. **However**, unlike with
-`npm`, the details of the package are _not_ automatically added to the
-`renv.lock` file.
+This installs the package into the project's `renv/` directory. **However**, 
+unlike with `npm`, the details of the package are _not_ automatically added to 
+the `renv.lock` file.
 
 In order to do that, you need to run the `renv::snapshot()` function:
 
@@ -503,10 +517,76 @@ But...that doesn't really look like it did anything either. What is going on?
 
 ---
 
+# `type == "implicit"`
+
+So what you might call _lazy_, `renv` calls _efficient_.
+
+First "use" your dependency in a script, by running the below in the terminal:
+
+```sh
+echo 'janitor::make_clean_names("a VERY unclean name")' &gt;&gt; some_janitor.R
+```
+
+And then run `renv::snapshot()` again in your R terminal:
+
+```r
+renv::snapshot()
+# The following package(s) will be updated in the lockfile:
+# 
+# # CRAN ===============================
+# - R6           [* -&gt; 2.5.0]
+# ...
+# - janitor      [* -&gt; 2.1.0]
+# ...
+# - vctrs        [* -&gt; 0.3.8]
+# 
+Do you want to proceed? [y/N]: y
+# * Lockfile written to '~/Documents/Sandbox/renv-testing/renv.lock'.
+```
+
+---
+
 # Typical workflow
 
 * Create project / package
 * Run `renv::init()`
+* Restart your R session
+* add `renv` directory to your `.gitignore` file
+* Write some R code, running `renv::install()` as you need to use packages
+* When you're happy with your code, run `renv::snapshot()` to record your
+dependencies in your `renv.lock` file
+
+Then, when you come back to work on a project after others have contributed, or
+if you are a developer working on a project for the first time:
+
+* `git pull` updates from the main upstream branch
+* run `renv::status()` to see whether the lockfile and the `renv` directory are
+in sync
+* if there are dependencies in the lockfile which are _not_ installed locally,
+run `renv::restore()`
+* if you have dependencies installed locally which are not recorded in the 
+lockfile, run `renv::snapshot()`
+
+---
+
+# Other useful functions
+
+| Function | Description |
+| :--- | :--- |
+| [`renv::status()`](https://rstudio.github.io/renv/reference/status.html) | Report differences between the project's lockfile and the current state of the project's library. |
+| [`renv::hydrate()`](https://rstudio.github.io/renv/reference/hydrate.html) | Discover the R packages used within a project, and then install those packages into the active library (but don't add them to the lockfile) |
+| [`renv::isolate()`](https://rstudio.github.io/renv/reference/isolate.html) | Copy packages from the `renv` cache directly into the project library, so that the project can continue to function independently of the `renv` cache. |
+| [`renv::update()`](https://rstudio.github.io/renv/reference/update.html) | Update packages which are currently out-of-date. Currently, only CRAN and GitHub package sources are supported. |
+| [`renv::remove()`](https://rstudio.github.io/renv/reference/remove.html) | Uninstall R packages. |
+| [`renv::upgrade()`](https://rstudio.github.io/renv/reference/upgrade.html) | Upgrade the version of `renv` associated with a project. |
+
+Further reading: https://rstudio.github.io/renv/index.html
+
+???
+
+* Mention the fact that `renv` uses a system level cache of installed packages, 
+so that it can pull packages required by multiple different projects from one 
+place locally (saves time)
 
 ---
 

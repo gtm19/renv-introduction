@@ -190,7 +190,7 @@ th, td {
   padding: 5px;
 }
 .remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) {
-  background: #E9E9E9;
+  background: black;
 }
 table.dataTable tbody {
   background-color: var(--background-color);
@@ -200,7 +200,7 @@ table.dataTable.display tbody tr.odd {
   background-color: var(--background-color);
 }
 table.dataTable.display tbody tr.even {
-  background-color: #E9E9E9;
+  background-color: black;
 }
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.5);
@@ -266,4 +266,7 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+.remark-slide thead {
+  background: var(--primary);
 }
