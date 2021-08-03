@@ -141,7 +141,6 @@ which basically shouts at you when you miss a semicolon:
 
 ```sh
 npm install eslint
-cat package.json
 ```
 
 Now what do we have?
@@ -170,6 +169,10 @@ A wild `node_modules/` directory and a `package-lock.json` file have appeared!
 # `package.json`
 
 `eslint` is now listed as a dependency in `package.json`:
+
+```sh
+cat package.json
+```
 
 ```json
 {
@@ -370,8 +373,8 @@ We now have a `renv/` directory, a `renv.lock` file, and a `.Rprofile` file.
 Also, our `.libPaths()` have changed:
 
 ```r
-libPaths()
-# [1] "/Users/garethmaddock/Documents/Sandbox/renv-testing/renv/library/R-4.0/x86_64-apple-darwin17.0"
+.libPaths()
+# [1] "~/Documents/Sandbox/renv-testing/renv/library/R-4.0/x86_64-apple-darwin17.0"
 # [2] "/private/var/folders/m7/6__gwwrs40gc8ytt3l8mqx880000gr/T/RtmppZDUrg/renv-system-library"
 ```
 
@@ -382,8 +385,9 @@ libPaths()
 This is the `renv` equivalent of `node_modules/`: it's where your project's R
 packages will be installed.
 
-Just like with `node_modules/`, this should be added to `.gitignore` due to its
-likely size.
+Just like with `node_modules/`, the subdirectories of `renv/` which store the
+dependencies themselves are automatically added to a `.gitignore` file due to
+their size.
 
 What's in the various files and subdirectories is beyond the scope of this
 presentation, but it's worth noting that packages will be installed in
@@ -551,10 +555,11 @@ Do you want to proceed? [y/N]: y
 * create project / package
 * run `renv::init()`
 * restart your R session
-* add `renv` directory to your `.gitignore` file
 * write some R code, running `renv::install()` as you need to use packages
 * when you're happy with your code, run `renv::snapshot()` to record your
 dependencies in your `renv.lock` file
+* merrily push your code to GitHub when necessary, knowing that the dependencies
+themselves will be left behind
 
 Then, when you come back to work on a project after others have contributed, or
 if you are a developer working on a project for the first time:
